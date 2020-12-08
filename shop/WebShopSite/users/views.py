@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
-from .models import Tovar
+from .models import Tovar, Users_purchase, Status
+
+
 # Create your views here.
 
 def index(request):
@@ -28,8 +30,12 @@ def register(request):
             form.save()
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
-
             user = authenticate(username=username, password=password)
+            new_purchase = Users_purchase()
+            allstatuse = Status.objects.order_by('name')
+            for status in allstatuse:
+                if status.name == "Текущий":
+                    new_purchase.create(user, status)
             login(request,user)
             return redirect('index')
     else:

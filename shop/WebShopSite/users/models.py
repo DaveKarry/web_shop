@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 
 # Create your models here.
@@ -17,9 +18,14 @@ class Tovar(models.Model):
     full_description = models.CharField(max_length=500)
     price = models.FloatField()
     category = models.ManyToManyField(Category)
+    creation_time = models.DateTimeField(blank=True,null=False)
 
     def __str__(self):
         return self.name
+
+    def create(self):
+        self.creation_time = timezone.now()
+        self.save()
 
 
 class Users_purchase(models.Model):
@@ -27,8 +33,15 @@ class Users_purchase(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     status = models.ForeignKey('status', on_delete=models.CASCADE)
     def __str__(self):
-        str = self.user+" "+self.status
+        str = self.user.username + " "+self.status.name
         return str
+
+    def create(self, user,status):
+        self.user = user
+        self.status = status
+        self.check = "none"
+        self.save()
+
 
 class Status(models.Model):
     name = models.CharField(max_length=30)
