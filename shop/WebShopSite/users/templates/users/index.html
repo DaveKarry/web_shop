@@ -1,33 +1,15 @@
-<!doctype html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>The index</title>
-</head>
-<body>
-<div class="nav">
-    {% if user.is_authenticated %}
-    <p>Вы в системе!</p>
-    <a href="/custom_logout">Выйти!</a>
-    {% else %}
-    <a href="/register">Зарегистрироваться!</a>
-    <a href="/accounts/login">Войти!</a>
-    {% endif %}
-</div>
-<div class="greetengs">
-    <h1>this is the index page!</h1>
-    {% if user.is_authenticated %}
-    <p>Привет, {{ user.username }}! </p>
-    {% else %}
-    <p> Вы не в системе, представьтесь </p>
-    {% endif %}
-</div>
-<div class="content">
-    
-</div>
+{% extends 'base_layout.html' %}
 
-</body>
-</html>
+{% block content %}
+<div class="content">
+    <div class="about">
+        <a href="shop/about">О нас</a>
+    </div>
+    <div class="contact">
+        <a href="shop/contact">Как связаться?</a>
+    </div>
+    <div class="new">
+        <a href="shop/new">Новые товары!</a>
+    </div>
+</div>
+{% endblock %}

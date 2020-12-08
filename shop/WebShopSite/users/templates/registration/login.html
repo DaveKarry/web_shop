@@ -1,13 +1,6 @@
-<!doctype html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login</title>
-</head>
-<body>
+{% extends 'base_layout.html'%}
+
+{% block content %}
     {% if form.errors %}
     <p>Ошибка! Что-то пошло не так!</p>
     {% endif %}
@@ -24,8 +17,5 @@
 
         <input type="submit" value="login">
         <input type="hidden" name="next" value="{{ next }}">
-
-
     </form>
-</body>
-</html>
+{% endblock %}
