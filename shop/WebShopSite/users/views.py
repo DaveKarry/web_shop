@@ -1,8 +1,13 @@
-from django.shortcuts import render, redirect
+from time import timezone
+
+from django.shortcuts import render
+from django.shortcuts import redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
 from django.contrib.auth import logout
-from .models import Tovar, Users_purchase, Status
+from .models import *
+from .forms import *
 
 
 # Create your views here.
@@ -46,3 +51,16 @@ def register(request):
 def catalog(request):
     tovars = Tovar.objects.order_by('price')
     return render(request, 'shop/catalog.html',{'tovars':tovars})
+
+def create_tovar(request):
+    if request.method == "POST":
+        form =TovarForm(request.POST)
+        if form.is_valid():
+            tovar = form.save(commit=False)
+            tovar.creation_time = timezone.now()
+            tovar.save()
+            return redirect('catalog')
+    else:
+        form = TovarForm()
+        context = {'form': form}
+        return render(request, 'shop/create_tovar.html', context)

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>The index</title>
+</head>
+<body>
+<div class="header">
+    <div class="authentificate">
+        {% if user.is_authenticated %}
+        <p>Вы в системе!</p>
+        <a href="/custom_logout">Выйти!</a>
+        {% else %}
+        <a href="/register">Зарегистрироваться!</a>
+        <a href="/accounts/login">Войти!</a>
+        {% endif %}
+    </div>
+    <div class="navigation">
+        <a href="/">На главную</a>
+        <a href="/shop/catalog">Просмотреть товары</a>
+        <a href="/shop/new_tovars">Новые товары</a>
+        <a href="/users/contact">Связаться с нами</a>
+        <a href="/users/about">О нас</a>
+        {% if user.is_superuser %}
+        <a href="/shop/create_tovar">Добавить товар</a>
+        {% endif %}
+
+    </div>
+
+</div>
+<div class="greetengs">
+    <h1>Фермерское хозяйство "Ы"</h1>
+    {% if user.is_authenticated %}
+    <p>Привет, {{ user.username }}! </p>
+    {% else %}
+    <p> Вы не в системе, представьтесь </p>
+    {% endif %}
+</div>
+
+
+
+<div class="wrapper">
+    {% block content %}
+    {% endblock %}
+</div>
+
+</body>
+</html>

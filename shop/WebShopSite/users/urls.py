@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('new_tovars',views.new_tovars, name='new_tovars'),
     path('about',views.about, name='about'),
     path('contact',views.contact, name='contact'),
+    path('create_tovar',views.create_tovar, name='create_tovar')
 ]
