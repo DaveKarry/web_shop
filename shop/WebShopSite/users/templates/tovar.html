@@ -1,0 +1,17 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+    <p>Товар: </p>
+
+    <p>Название: {{ object.name }}</p>
+    <p>{{ object.image }}</p>
+
+    <p>Осталось: {{ object.count }}</p>
+    {{ object.full_description }}
+    <p>{{ object.price }}</p>
+    <p>Категории: <p>
+    {% for item in object.category.all %}
+    <p>{{ item.name }}<p>
+    {% endfor %}
+    <a href="{{ object.get_add_to_order_url }}"> добавить в корзину</a>
+
+{% endblock %}

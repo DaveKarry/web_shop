@@ -1,13 +1,16 @@
 from time import timezone
 
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.views.generic import  DetailView
 from .models import *
 from .forms import *
+
 
 
 # Create your views here.
@@ -36,11 +39,6 @@ def register(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
-            new_purchase = Users_purchase()
-            allstatuse = Status.objects.order_by('name')
-            for status in allstatuse:
-                if status.name == "Текущий":
-                    new_purchase.create(user, status)
             login(request,user)
             return redirect('index')
     else:
@@ -64,3 +62,28 @@ def create_tovar(request):
         form = TovarForm()
         context = {'form': form}
         return render(request, 'shop/create_tovar.html', context)
+
+def add_to_curent_order(request, slug):
+    tovar = get_object_or_404(Tovar,slug=slug)
+    orderItem, created = OrderItem.objects.get_or_create(item=tovar, user=request.user, ordered=False)
+    order_qs = Order.objects.filter(user=request.user, is_ordered=False)
+    if order_qs.exists():
+        current_order = order_qs[0]
+        if current_order.tovars.filter(item__slug=tovar.slug).exists():
+            orderItem.quantity +=1
+            orderItem.save()
+        else:
+            current_order.tovars.add(orderItem)
+    else:
+        ordered_date = timezone.now()
+        current_order =Order.objects.create(user=request.user, ordered_date=ordered_date)
+        current_order.tovars.add(orderItem)
+    return  redirect("tovar", slug=slug)
+
+
+class TovarDetailView(DetailView):
+    model = Tovar
+    template_name = "tovar.html"
+
+
+
