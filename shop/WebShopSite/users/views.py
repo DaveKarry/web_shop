@@ -7,7 +7,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.views.generic import  DetailView
+from django.views.generic import  View
+from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 from .forms import *
 
@@ -50,6 +55,7 @@ def catalog(request):
     tovars = Tovar.objects.order_by('price')
     return render(request, 'shop/catalog.html',{'tovars':tovars})
 
+@login_required
 def create_tovar(request):
     if request.method == "POST":
         form =TovarForm(request.POST)
@@ -63,6 +69,8 @@ def create_tovar(request):
         context = {'form': form}
         return render(request, 'shop/create_tovar.html', context)
 
+
+@login_required
 def add_to_curent_order(request, slug):
     tovar = get_object_or_404(Tovar,slug=slug)
     orderItem, created = OrderItem.objects.get_or_create(item=tovar, user=request.user, ordered=False)
@@ -86,4 +94,13 @@ class TovarDetailView(DetailView):
     template_name = "tovar.html"
 
 
+class OrderView(LoginRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, is_ordered=False)
+            context ={'object':order}
+            return render(self.request, "order.html", context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "У вас нет заказов!")
+            return redirect("/")
 

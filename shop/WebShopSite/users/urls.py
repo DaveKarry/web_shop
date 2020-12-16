@@ -11,5 +11,6 @@ urlpatterns = [
     path('contact',contact, name='contact'),
     path('create_tovar',create_tovar, name='create_tovar'),
     path('tovar/<slug>/', TovarDetailView.as_view(), name='tovar'),
+    path('order/', OrderView.as_view(), name='order'),
     path('add-to-order/<slug>', add_to_curent_order, name='add-to-order'),
 ]
