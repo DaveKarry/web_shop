@@ -40,6 +40,12 @@ class Tovar(models.Model):
             'slug': self.slug
         })
 
+    def get_remove_from_cart_url(self):
+        return reverse("remove-from-cart", kwargs={
+            'slug': self.slug
+        })
+
+
 class OrderItem(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=True,null=True)
     ordered = models.BooleanField(default=False)
@@ -49,6 +55,8 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.item.name} в количестве {self.quantity}"
 
+    def get_total_item_price(self):
+        return self.quantity * self.item.price
 
 
 class Order(models.Model):
@@ -68,6 +76,12 @@ class Order(models.Model):
         self.is_ordered = False
         self.save()
 
+    def get_total(self):
+        total = 0
+        for order_item in self.tovars.all():
+            total+=order_item.get_total_item_price()
+        return total
+
 class Adress(models.Model):
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -79,3 +93,4 @@ class Adress(models.Model):
     def __str__(self):
         adress = self.country+self.city+self.street+ self.number
         return adress
+

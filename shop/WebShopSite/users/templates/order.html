@@ -18,13 +18,34 @@
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td>{{ order.item.name }}</td>
-                <td>{{ order.item.price }}</td>
+                <td>{{ order.item.price }} рублей</td>
                 <td>{{ order.quantity }}</td>
+                <td>{{ order.get_total_item_price }} рублей</td>
 
 
 
             </tr>
+        {% empty %}
+
+            <tr>
+                <td colspan="5">Ваша корзина пуста</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                <a href="/">Продолжить покупки</a>
+                </td>
+            </tr>
         {% endfor %}
+        <tr>
+                <td colspan="4">Итого:</td>
+                <td>{{ object.get_total }} Рублей</td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <a href="/">Продолжить покупки</a>
+                <a href="/checkout/">Получить чек!</a>
+            </td>
+        </tr>
         </tbody>
     </table>
 </div>

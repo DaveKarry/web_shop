@@ -1,50 +1,51 @@
-<!doctype html>
+{% load static %}
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>The index</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/mdb.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/style.min.css' %}" rel="stylesheet">
+  <style type="text/css">
+    html,
+    body,
+    header,
+    .carousel {
+      height: 60vh;
+    }
+
+    @media (max-width: 740px) {
+
+      html,
+      body,
+      header,
+      .carousel {
+        height: 100vh;
+      }
+    }
+
+    @media (min-width: 800px) and (max-width: 850px) {
+
+      html,
+      body,
+      header,
+      .carousel {
+        height: 100vh;
+      }
+    }
+
+  </style>
 </head>
+    {% include "navbar.html" %}
 <body>
-<div class="header">
-    <div class="authentificate">
-        {% if user.is_authenticated %}
-        <p>Вы в системе!</p>
-        <a href="/custom_logout">Выйти!</a>
-        {% else %}
-        <a href="/register">Зарегистрироваться!</a>
-        <a href="/accounts/login">Войти!</a>
-        {% endif %}
+<div class="mt-5 pt-4">
+    <div class="wrapper">
+        {% block content %}
+        {% endblock %}
     </div>
-    <div class="navigation">
-        <a href="/">На главную</a>
-        <a href="/shop/catalog">Просмотреть товары</a>
-        <a href="/shop/new_tovars">Новые товары</a>
-        <a href="/users/contact">Связаться с нами</a>
-        <a href="/users/about">О нас</a>
-        {% if user.is_superuser %}
-        <a href="/shop/create_tovar">Добавить товар</a>
-        {% endif %}
-
-    </div>
-
-</div>
-<div class="greetengs">
-    <h1>Фермерское хозяйство "Ы"</h1>
-    {% if user.is_authenticated %}
-    <p>Привет, {{ user.username }}! </p>
-    {% else %}
-    <p> Вы не в системе, представьтесь </p>
-    {% endif %}
-</div>
-
-
-
-<div class="wrapper">
-    {% block content %}
-    {% endblock %}
 </div>
 
 </body>

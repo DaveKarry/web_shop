@@ -1,0 +1,8 @@
+<div class="greetengs">
+    <h1>Фермерское хозяйство "Ы"</h1>
+    {% if user.is_authenticated %}
+    <p>Привет, {{ user.username }}! </p>
+    {% else %}
+    <p> Вы не в системе, представьтесь </p>
+    {% endif %}
+</div>
