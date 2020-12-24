@@ -10,17 +10,23 @@ CATEGORY_CHOICES = (
     ('Egg', 'Яйца птицы'),
     ('Plant', 'Растительный продукт'),
 )
+class Category(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
 
 class Tovar(models.Model):
     name = models.CharField(max_length=30)
-    image = models.CharField(max_length=50)
+    image = models.ImageField(upload_to='images', blank=True, null=True)
     count = models.IntegerField()
     short_description = models.CharField(max_length=100)
     full_description = models.CharField(max_length=500)
     price = models.FloatField()
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=5)
     creation_time = models.DateTimeField(blank=True,null=False)
-    slug = models.ImageField()
+    slug = models.SlugField()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
     def __str__(self):
@@ -45,6 +51,10 @@ class Tovar(models.Model):
             'slug': self.slug
         })
 
+    def get_delete_tovar_url(self):
+        return reverse("delete", kwargs={
+            'slug': self.slug
+        })
 
 class OrderItem(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=True,null=True)

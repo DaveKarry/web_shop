@@ -15,6 +15,7 @@ from django.views.generic import  View
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 from .forms import *
+import time
 
 
 
@@ -36,6 +37,11 @@ def custom_logout(request):
     logout(request)
     return render(request, 'users/index.html')
 
+def delete(request, slug):
+    tovar = get_object_or_404(Tovar, slug=slug)
+    tovar.delete()
+    return redirect('catalog')
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -45,6 +51,7 @@ def register(request):
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
             login(request,user)
+            time.sleep(1)
             return redirect('index')
     else:
         form = UserCreationForm()
@@ -55,9 +62,9 @@ def catalog(request):
     tovars = Tovar.objects.order_by('price')
     return render(request, 'shop/catalog.html',{'tovars':tovars})
 
-@login_required
 def create_tovar(request):
     if request.method == "POST":
+        print("Зашли")
         form =TovarForm(request.POST)
         if form.is_valid():
             tovar = form.save(commit=False)
@@ -104,3 +111,77 @@ class OrderView(LoginRequiredMixin, View):
             messages.error(self.request, "У вас нет заказов!")
             return redirect("/")
 
+@login_required
+def remove_from_order(request, slug):
+    item = get_object_or_404(Tovar, slug=slug)
+    order_qs = Order.objects.filter(
+        user=request.user,
+        is_ordered=False
+    )
+    if order_qs.exists():
+        order = order_qs[0]
+        # check if the order item is in the order
+        if order.tovars.filter(item__slug=item.slug).exists():
+            order_item = OrderItem.objects.filter(
+                item=item,
+                user=request.user,
+                ordered=False
+            )[0]
+            order.tovars.remove(order_item)
+            order_item.delete()
+            return redirect("order")
+        else:
+            return redirect("tovar", slug=slug)
+    else:
+        return redirect("tovar", slug=slug)
+
+
+@login_required
+def remove_single_item_from_order(request, slug):
+    item = get_object_or_404(Tovar, slug=slug)
+    order_qs = Order.objects.filter(
+        user=request.user,
+        is_ordered=False
+    )
+    if order_qs.exists():
+        order = order_qs[0]
+        if order.tovars.filter(item__slug=item.slug).exists():
+            order_item = OrderItem.objects.filter(
+                item=item,
+                user=request.user,
+                ordered=False
+            )[0]
+            if order_item.quantity > 1:
+                order_item.quantity -= 1
+                order_item.save()
+            else:
+                order.tovars.remove(order_item)
+            return redirect("order")
+        else:
+            return redirect("tovar", slug=slug)
+    else:
+        return redirect("tovar", slug=slug)
+
+@login_required
+def add_single_item_to_order(request, slug):
+    tovar = get_object_or_404(Tovar, slug=slug)
+    print("tut")
+    order_qs=Order.objects.filter(
+        user=request.user,
+        is_ordered=False
+    )
+    if order_qs.exists:
+        order = order_qs[0]
+        if order.tovars.filter(item__slug=tovar.slug).exists():
+            order_item = OrderItem.objects.filter(
+                item=tovar,
+                user=request.user,
+                ordered=False
+            )[0]
+            order_item.quantity += 1
+            order_item.save()
+            return redirect("order")
+        else:
+            return redirect("tovar", slug=slug)
+    else:
+        return redirect("tovar", slug=slug)

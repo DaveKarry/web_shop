@@ -1,16 +1,31 @@
 {% extends 'base_layout.html' %}
-
+{% load static %}
 {% block content %}
 <div class="catalog">
-    {% for tovar in tovars %}
-    <div>
-        <p> {{ tovar.name }}</p>
-        <h1>{{ tovar.price }}</h1>
-        <h1>В наличии: {{ tovar.count }}</h1>
-        <h1> {{ tovar.description }}</h1>
-        <a href="{{ tovar.get_absolute_url }}">Подробнее</a>
+    <section class="text-center mb-4">
 
-    </div>
+    <div class="row wow fadeIn">
+    {% for tovar in tovars %}
+        <div class="col-sm-4 mb-4">
+            <div class="card">
+                {% if not tovar.image  %}
+                <img src="" alt="Фото нет">
+                {% else %}
+                    <img class="card-img-top" src="{{ tovar.image.url }}" alt="Card image cap">
+                {% endif %}
+            <div class="card-body">
+                <p> {{ tovar.name }}</p>
+                <h1>{{ tovar.price }}</h1>
+                <h1>В наличии: {{ tovar.count }}</h1>
+                <h1> {{ tovar.description }}</h1>
+                <a href="{{ tovar.get_absolute_url }}">Подробнее</a>
+
+            </div>
+            </div>
+        </div>
     {% endfor %}
+    </div>
+    </section>
 </div>
+
 {% endblock %}

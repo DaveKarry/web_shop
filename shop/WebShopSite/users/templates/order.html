@@ -14,19 +14,19 @@
             </tr>
         </thead>
         <tbody>
-        {% for order in object.tovars.all %}
+        {% for orderItem in object.tovars.all %}
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
-                <td>{{ order.item.name }}</td>
-                <td>{{ order.item.price }} рублей</td>
-                <td>{{ order.quantity }}</td>
-                <td>{{ order.get_total_item_price }} рублей</td>
-
-
-
+                <td>{{ orderItem.item.name }}</td>
+                <td>{{ orderItem.item.price }} рублей</td>
+                <td>
+                    <a href="{% url 'remove-single-item-from-order' orderItem.item.slug %}"><i class="fas fa-minus mr-2"></i></a>
+                    {{ orderItem.quantity }}
+                    <a href="{% url 'add-single-item-to-order' orderItem.item.slug %}"><i class="fas fa-plus ml-2"></i></a>
+                </td>
+                <td>{{ orderItem.get_total_item_price }} рублей</td>
             </tr>
         {% empty %}
-
             <tr>
                 <td colspan="5">Ваша корзина пуста</td>
             </tr>

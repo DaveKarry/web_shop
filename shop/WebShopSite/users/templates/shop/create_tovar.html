@@ -1,11 +1,14 @@
 {% extends 'base_layout.html' %}
-
+{% load static %}
 {% block content %}
     <h>Создать запись</h>
-    <form method="POST" class="tovar-form-create">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Сохранить</button>
-    </form>
+    <div class="form-group">
+        <form enctype="multipart/form-data" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Сохранить</button>
+        </form>
+
+    </div>
 
 {% endblock%}

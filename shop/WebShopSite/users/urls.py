@@ -12,7 +12,11 @@ urlpatterns = [
     path('create_tovar',create_tovar, name='create_tovar'),
     path('tovar/<slug>/', TovarDetailView.as_view(), name='tovar'),
     path('order/', OrderView.as_view(), name='order'),
+    path('delete/<slug>', delete, name='delete'),
+    path('remove-from-order/<slug>/', remove_from_order, name='remove-from-order'),
+    path('remove-item-from-order/<slug>', remove_single_item_from_order, name='remove-single-item-from-order'),
     path('add-to-order/<slug>', add_to_curent_order, name='add-to-order'),
+    path('add-item-to-order/<slug>', add_single_item_to_order, name='add-single-item-to-order'),
     #path('checkout/', CheckoutView.as_view(), name='checkout'),
 
 ]
