@@ -1,0 +1,20 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+    Username: {{ request.user.username }}
+    <p></p>
+    {% if request.user.email %}
+    e-mail: {{ request.user.email}}
+    <a href="/users/add_email">Обновить почту</a>
+    {% else %}
+    <a href="/users/add_email">Добавить почту</a>
+    {% endif %}
+    <p></p>
+    Адреса:
+    {% for address in addresses  %}
+    <p>{{ address }}</p>
+    {% endfor %}
+    <p>
+        <a href="/users/add_address">Добавить новый</a>
+    </p>
+{% endblock %}

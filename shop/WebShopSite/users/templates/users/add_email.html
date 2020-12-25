@@ -1,0 +1,12 @@
+{% extends 'base_layout.html' %}
+{% block content %}
+<p>Изменение почты:</p>
+    <div class="form-group">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Сохранить</button>
+        </form>
+
+    </div>
+{% endblock %}

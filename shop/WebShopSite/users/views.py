@@ -16,8 +16,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 from .forms import *
 import time
-
-
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 # Create your views here.
 
@@ -29,9 +30,6 @@ def contact(request):
 
 def about(request):
     return render(request, 'users/about.html')
-
-def new_tovars(request):
-    return render(request, 'shop/new_tovars.html')
 
 def custom_logout(request):
     logout(request)
@@ -67,15 +65,12 @@ def create_tovar(request):
         print("Зашли")
         form =TovarForm(request.POST)
         if form.is_valid():
-            tovar = form.save(commit=False)
-            tovar.creation_time = timezone.now()
-            tovar.save()
+            form.save()
             return redirect('catalog')
     else:
         form = TovarForm()
         context = {'form': form}
         return render(request, 'shop/create_tovar.html', context)
-
 
 @login_required
 def add_to_curent_order(request, slug):
@@ -95,11 +90,9 @@ def add_to_curent_order(request, slug):
         current_order.tovars.add(orderItem)
     return  redirect("tovar", slug=slug)
 
-
 class TovarDetailView(DetailView):
     model = Tovar
     template_name = "tovar.html"
-
 
 class OrderView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
@@ -134,7 +127,6 @@ def remove_from_order(request, slug):
             return redirect("tovar", slug=slug)
     else:
         return redirect("tovar", slug=slug)
-
 
 @login_required
 def remove_single_item_from_order(request, slug):
@@ -185,3 +177,44 @@ def add_single_item_to_order(request, slug):
             return redirect("tovar", slug=slug)
     else:
         return redirect("tovar", slug=slug)
+
+def checkout(request):
+    return render(request, 'users/checkout.html')
+
+def profile(request):
+    addresses = Adress.objects.filter(
+        user = request.user
+    )
+    context = {'addresses': addresses}
+    return render(request, 'users/profile.html',context)
+
+def add_address(request):
+    if request.method == "POST":
+        form = AdressForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            form.save()
+            return redirect('profile')
+    else:
+        form = AdressForm()
+        context = {'form': form}
+        return render(request, 'users/add_address.html', context)
+
+class UpdateEmailView(View):
+    def get(self, *args, **kwargs):
+        form = UsersUpdateEmailForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, 'users/add_email.html', context)
+    def post(self,*args, **kwargs):
+        form = UsersUpdateEmailForm(self.request.POST or None)
+        if form.is_valid():
+            user = self.request.user
+            user.email = form.cleaned_data['email']
+            user.save()
+            return redirect('profile')
+        else:
+            return redirect('add_email')
+
