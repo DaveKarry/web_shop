@@ -15,6 +15,7 @@ from django.views.generic import  View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
+from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import *
 from .forms import *
 import time
@@ -78,7 +79,8 @@ class CreateTover(View):
         context = {'form': form}
         return render(self.request, 'shop/create_tovar.html', context)
     def post(self, *args,**kwargs):
-        form = TovarForm(self.request.POST)
+        messages = False
+        form = TovarForm(self.request.POST, self.request.FILES)
         if form.is_valid():
             form.save()
             return redirect('catalog')
@@ -90,7 +92,10 @@ class AddToCurrentOrder(View):
     @method_decorator(login_required)
     def get(self,*args,**kwargs):
         tovar = get_object_or_404(Tovar, slug=kwargs['slug'])
-        orderItem, created = OrderItem.objects.get_or_create(item=tovar, user=self.request.user, ordered=False)
+        orderItem, created = OrderItem.objects.get_or_create(
+            item=tovar,
+            user=self.request.user,
+            ordered=False)
         order_qs = Order.objects.filter(user=self.request.user, is_ordered=False)
         if order_qs.exists():
             current_order = order_qs[0]
@@ -241,3 +246,20 @@ class UpdateEmailView(View):
         else:
             return redirect('add_email')
 
+class AddImage(View):
+    def get(self,*args,**kwargs):
+        form = ImageUploadForm()
+        context = {
+            'form' : form
+        }
+        return render(self.request, 'shop/add_image.html', context)
+    def post(self,*args,**kwargs):
+        form = ImageUploadForm(self.request.POST or None, self.request.FILES)
+        if form.is_valid():
+            tovar = Tovar.objects.get(slug=kwargs['slug'])
+            tovar.image=form.cleaned_data['image']
+            tovar.save()
+            return redirect('tovar', slug=kwargs['slug'])
+        else:
+            messages.error(self.request, "Что-то опять пошло не так")
+            return redirect('tovar', slug=kwargs['slug'])

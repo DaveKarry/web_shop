@@ -1,4 +1,7 @@
-from django.urls import path, re_path
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import *
 
 urlpatterns = [
@@ -14,6 +17,7 @@ urlpatterns = [
     path('checkout/', Checkout.as_view(), name='checkout'),
     path('profile/', Profile.as_view(), name='profile'),
     path('add_address/', AddAddress.as_view(), name='add_address'),
+    path('add_image/<slug>/', AddImage.as_view(), name='add_image'),
     path('add_email/', UpdateEmailView.as_view() , name='add_email'),
     path('delete/<slug>', DeleteTovar.as_view(), name='delete'),
     path('remove-from-order/<slug>/', RemoveFromOrder.as_view(), name='remove-from-order'),

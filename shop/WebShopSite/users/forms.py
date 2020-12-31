@@ -14,3 +14,8 @@ class AdressForm(forms.ModelForm):
 
 class UsersUpdateEmailForm(forms.Form):
     email = forms.CharField()
+
+class ImageUploadForm(forms.ModelForm):
+    class Meta:
+        model = Tovar
+        fields =('image',)

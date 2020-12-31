@@ -15,6 +15,7 @@
     <a href="{{ object.get_add_to_order_url }}"> добавить в корзину</a>
     {% if user.is_superuser %}
     <a href="{{ object.get_delete_tovar_url }}"> Удалить товар!</a>
+    <a href="{{ object.get_add_image_url }}"> Добавить изображение</a>
     {% endif %}
 
 {% endblock %}

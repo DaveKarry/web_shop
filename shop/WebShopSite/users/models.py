@@ -18,13 +18,12 @@ class Category(models.Model):
 
 class Tovar(models.Model):
     name = models.CharField(max_length=30)
-    image = models.ImageField(upload_to='images', blank=True, null=True)
+    image = models.ImageField(upload_to='images')
     short_description = models.CharField(max_length=100)
     full_description = models.CharField(max_length=500)
     price = models.FloatField()
     slug = models.SlugField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-
 
     def __str__(self):
         return self.name
@@ -52,6 +51,12 @@ class Tovar(models.Model):
         return reverse("delete", kwargs={
             'slug': self.slug
         })
+    def get_add_image_url(self):
+        return reverse("add_image", kwargs={
+            'slug': self.slug
+        })
+
+
 
 class OrderItem(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=True,null=True)
@@ -67,7 +72,7 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    check = models.CharField(max_length=30)
+    pdf_check = models.FileField(null=True, default=1)
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     is_ordered = models.BooleanField(default=False)
     ordered_date = models.DateTimeField()
@@ -76,22 +81,25 @@ class Order(models.Model):
     def __str__(self):
         return self.user.username
 
-    def create(self, user,status):
-        self.user = user
-        self.status = status
-        self.check = "none"
-        self.is_ordered = False
-        self.save()
-
     def get_total(self):
         total = 0
         for order_item in self.tovars.all():
             total+=order_item.get_total_item_price()
         return total
 
+class Country(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
+
+class City(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+            return self.name
+
 class Adress(models.Model):
-    country = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
     street = models.CharField(max_length=50)
     number = models.CharField(max_length=50)
     index = models.CharField(max_length=50)
