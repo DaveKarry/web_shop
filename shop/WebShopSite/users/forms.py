@@ -1,5 +1,6 @@
 from django import forms
-from .models import Tovar, Adress
+from .models import Tovar, Adress, Order
+
 
 
 class TovarForm(forms.ModelForm):
@@ -19,3 +20,9 @@ class ImageUploadForm(forms.ModelForm):
     class Meta:
         model = Tovar
         fields =('image',)
+
+class SelectAddressForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields =('shipping_address',)
+

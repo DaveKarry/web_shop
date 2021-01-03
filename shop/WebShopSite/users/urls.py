@@ -19,6 +19,7 @@ urlpatterns = [
     path('add_address/', AddAddress.as_view(), name='add_address'),
     path('add_image/<slug>/', AddImage.as_view(), name='add_image'),
     path('add_email/', UpdateEmailView.as_view() , name='add_email'),
+    path('make_order/', MakeOrder.as_view() , name='make_order'),
     path('delete/<slug>', DeleteTovar.as_view(), name='delete'),
     path('remove-from-order/<slug>/', RemoveFromOrder.as_view(), name='remove-from-order'),
     path('remove-item-from-order/<slug>', RemoveSingleItemFromOrder.as_view(), name='remove-single-item-from-order'),

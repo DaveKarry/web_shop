@@ -72,11 +72,12 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    pdf_check = models.FileField(null=True, default=1)
+    pdf_check = models.FileField(null=True, blank=True)
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     is_ordered = models.BooleanField(default=False)
     ordered_date = models.DateTimeField()
     tovars = models.ManyToManyField(OrderItem)
+    shipping_address = models.ForeignKey('Adress', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -106,6 +107,6 @@ class Adress(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 
     def __str__(self):
-        adress = self.country+" "+self.city+" "+self.street+" "+self.number
+        adress = self.country.name+" "+self.city.name+" "+self.street+" "+self.number
         return adress
 

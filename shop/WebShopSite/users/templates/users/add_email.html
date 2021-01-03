@@ -1,6 +1,13 @@
 {% extends 'base_layout.html' %}
 {% block content %}
 <p>Изменение почты:</p>
+    {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
     <div class="form-group">
         <form method="POST">
             {% csrf_token %}

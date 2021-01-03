@@ -14,8 +14,11 @@ from django.views.generic import  DetailView
 from django.views.generic import  View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-from django.core.files.uploadedfile import SimpleUploadedFile
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase import ttfonts
 from .models import *
 from .forms import *
 import time
@@ -98,6 +101,7 @@ class AddToCurrentOrder(View):
             ordered=False)
         order_qs = Order.objects.filter(user=self.request.user, is_ordered=False)
         if order_qs.exists():
+            print(order_qs[0])
             current_order = order_qs[0]
             if current_order.tovars.filter(item__slug=tovar.slug).exists():
                 orderItem.quantity += 1
@@ -263,3 +267,49 @@ class AddImage(View):
         else:
             messages.error(self.request, "Что-то опять пошло не так")
             return redirect('tovar', slug=kwargs['slug'])
+
+class MakeOrder(View):
+    def get(self,*args,**kwargs):
+        order = Order.objects.get(
+            user=self.request.user,
+            is_ordered=False,
+        )
+        adress_qs = Adress.objects.filter(
+            user=self.request.user
+        )
+        form = SelectAddressForm()
+        context ={
+            'order': order,
+            'adress_qs': adress_qs,
+            'form': form,
+        }
+        return render(self.request, 'shop/make_order.html', context)
+
+    def post(self,*args,**kwargs):
+        form = SelectAddressForm(self.request.POST or None)
+        if form.is_valid():
+            MyFontObject = ttfonts.TTFont('Arial', 'arial.ttf')
+            pdfmetrics.registerFont(MyFontObject)
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="check.pdf"'
+            p = canvas.Canvas(response)
+            order = Order.objects.get(
+                user=self.request.user,
+                is_ordered=False,
+            )
+            order.shipping_address=form.cleaned_data['shipping_address']
+            order.is_ordered = True
+            order.save()
+            p.setFont("Arial", 9)
+            p.drawString(255, 800, "Check")
+            p.drawString(100, 700, self.request.user.username +" "+ self.request.user.email)
+            p.drawString(100, 600, "Сумма: "+ str(order.get_total()))
+            p.drawString(100, 500, str(order.shipping_address))
+
+            p.showPage()
+            p.save()
+            return response
+
+        else:
+            messages.error(self.request, "Что-то опять пошло не так")
+            return redirect('profile')
